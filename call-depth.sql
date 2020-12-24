@@ -13,11 +13,7 @@ set pagesize 100
 create or replace package call_depth
 is
 	
-$if dbms_db_version.version <= 11 $then
-	function get_depth ( stack_msg clob ) return integer;
-$else
 	function get_depth return integer;
-$end
 
 end;
 /
@@ -28,18 +24,17 @@ show error package call_depth
 create or replace package body call_depth
 is
 
-	$if dbms_db_version.version <= 11 $then
-		c_stack clob;
-	$end
 
 $if dbms_db_version.version <= 11 $then
 
-function get_depth ( stack_msg clob ) return integer
+function get_depth return integer
 is
 
 	--type t_stack_lines is record (line varchar2(1024));
 	--type t_stack_rows is table of t_stack_lines index by pls_integer;
 	--t_stack_tab t_stack_rows;
+
+	stack_msg clob;
 
 	type t_line_begin is table of integer index by pls_integer;
 	t_line_begin_tab t_line_begin;
@@ -55,8 +50,10 @@ is
 	v_line varchar2(256);
 	i_line_start integer;
 	i_rev_line_end integer;
-	i_stack_depth integer := -1;
+	i_stack_depth integer := -2;
 begin
+ 
+	stack_msg := dbms_utility.format_call_stack;
 
 	--dbms_output.put_line('call_depth()');
 	i_stack_len := dbms_lob.getlength(stack_msg);
