@@ -67,4 +67,25 @@ PL/SQL procedure successfully completed.
 
 ```
 
+## call depth differences
+
+The depth of the stack is different when called via anonymous block than when called strictly within stored code.
+
+This package does not attempt to deal with this.
+
+Whether done via the manual procedure (11g and older) or utl_call_stack, 2 is subtracted from the value.
+
+This more closely aligns with the application (PL/SQL) call stack.
+
+For instance , p0 calls p1, p1 calls p3.  The call stack returned from within p3() is 3 if the code is all an anonymous block.
+
+When created as a stored procedure, calling call_stack.get_depth returns 1 value higher.
+
+See `call-stack-test-01.sql` and `call-stack-test-02.sql`
+
+
+
+
+
+
 
