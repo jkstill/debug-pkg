@@ -8,6 +8,7 @@ set linesize 250 trimspool on
 set pagesize 100
 
 create or replace package call_depth_test
+authid definer
 is
 
 	procedure p3;
