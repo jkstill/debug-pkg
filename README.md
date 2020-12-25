@@ -1,9 +1,13 @@
 PL/SQL Debugging Routines
 =========================
 
-Just some things to help with debugging
+Just some things to help with debugging PL/SQL code.
 
-## call_stack package
+## grants.sql
+
+These grants must be made to the user creating the package.
+
+## call_depth package
 
 It would be useful to know what the current level is in the call stack when debugging.
 
@@ -15,12 +19,28 @@ What this code does is walk through the call stack and look for address lines.
 
 The call depth is 0 based. 
 
-When you build the call_stack package, dbms_db_version.version is used to determine which code to compile.
+When you build the call_depth package, dbms_db_version.version is used to determine which code to compile.
 
 This has been tested on 11.1 and 19.8 versions of the oracle database.
 
+### call_depth.sql
+
+Create the package:
+```text
+SQL# @call-depth
+
+Package created.
+
+No errors.
+
+Package body created.
+
+No errors.
+```
 
 ### demo-02.sql
+
+This is a demo of using the call_depth package:
 
 ```text
 SQL# @demo-02
@@ -67,7 +87,7 @@ PL/SQL procedure successfully completed.
 
 ```
 
-## call depth differences
+### call depth differences
 
 The depth of the stack is different when called via anonymous block than when called strictly within stored code.
 
@@ -79,12 +99,101 @@ This more closely aligns with the application (PL/SQL) call stack.
 
 For instance , p0 calls p1, p1 calls p3.  The call stack returned from within p3() is 3 if the code is all an anonymous block.
 
-When created as a stored procedure, calling call_stack.get_depth returns 1 value higher.
+When created as a stored procedure, calling call_depth.get_depth returns 1 value higher.
 
 See `call-stack-test-01.sql` and `call-stack-test-02.sql`
 
+## Debug package DBG
+
+The DBG package is a fairly simple package for debugging output and minimal logging.
+
+The call depth is used to indent the text sent to dbg.debug_print.
+
+Logging messages are created with dbg.logentry.
+
+The default table name for the log table is PLSQL_LOG.  This can be changed in the package body if you like.
+No indexes are created on the table - create whatever indexes you need.
+
+The first invocation of dbg.logentry will create the log table if it doesn't already exist, along with a sequence PLSQL_LOG_SEQ.
+
+Following are some tests of the package.
+
+## dbg-pkg-test-01.sql
+
+Just a simple test of the function that checks for the existence of the log table
+
+```text
+SQL# @dbg-pkg-test-01.sql
+
+this line appears only when the develop flag is true
+this line appears only when the debug flag is true
+
+PL/SQL procedure successfully completed.
+
+table exists
+
+PL/SQL procedure successfully completed.
+
+```
+
+## dbg-pkg-test-02.sql
+
+This test enables debugging output, and prints a line of debug output.
+
+Next it creates a log entry, and then selects the most recent log entry from the PLSQL_LOG table.
+
+```text
+QL# @dbg-pkg-test-02.sql
+this line appears only when the develop flag is true
+this line appears only when the debug flag is true
+
+PL/SQL procedure successfully completed.
+
+============================================================
+  This is a test of the debug package
+------------------------------------------------------------
+
+PL/SQL procedure successfully completed.
 
 
+        ID LOG_TIMESTAMP                                                               CLIENT_INFO                                                      MODULE_INFO
+---------- --------------------------------------------------------------------------- ---------------------------------------------------------------- ----------------------------------------------------------------
+ACTION_INFO                                                      TAGS                                                             MSG
+---------------------------------------------------------------- ---------------------------------------------------------------- --------------------------------------------------------------------------------
+       282 24-DEC-20 04.34.45.409620 PM                                                Test Client Info                                                 Test Client Info: Module
+Test Client Info: Action 1                                       free form search text                                            This is a message for testing the DBG package
+
+
+1 row selected.
+
+```
+
+## dbg-pkg-test-03.sql
+
+This script demonstrate the use of call stack depth in debug output.
+
+```text
+QL# @dbg-pkg-test-03.sql
+============================================================
+  This is main
+------------------------------------------------------------
+Depth: 0
+============================================================
+    This is p1
+------------------------------------------------------------
+Depth: 1
+============================================================
+      This is p2
+------------------------------------------------------------
+Depth: 2
+============================================================
+        This is p3
+------------------------------------------------------------
+Depth: 3
+
+PL/SQL procedure successfully completed.
+
+```
 
 
 
