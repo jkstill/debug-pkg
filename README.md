@@ -38,6 +38,80 @@ Package body created.
 No errors.
 ```
 
+### call_depth.get_depth
+
+Returns calling depth from the stack.
+
+The value returned is adjusted so that values match:
+
+- between 11g and 12c+
+- whether called from anonymous block or stored procedures
+
+```text
+declare
+  i_call_depth integer;
+begin
+  i_call_depth := call_depth.get_depth;
+  dbms_output.put_line('depth: ' || to_char(i_call_depth));
+end;
+/
+
+depth: 1
+
+PL/SQL procedure successfully completed.
+ 
+```
+
+This will not work when called directly from sqlplus:
+
+```text
+SQL# select call_depth.get_depth from dual;
+select call_depth.get_depth from dual
+       *
+ERROR at line 1:
+ORA-64610: bad depth indicator
+ORA-06512: at "SYS.UTL_CALL_STACK", line 19
+ORA-06512: at "JKSTILL.CALL_DEPTH", line 218
+
+```
+
+### call_depth.who_am_i
+
+Returns the name of the current procedure or function.
+
+Note, this must be called immediately following a call to call_depth.get_depth.
+
+```text
+declare
+  who_am_i varchar2(120);
+begin
+  who_am_i := call_depth.who_am_i;
+  dbms_output.put_line('who_am_i: ' || who_am_i);
+end;
+SQL# /
+who_am_i: __anonymous_block
+```
+
+### call_depth.who_called_me
+
+Returns the name of the calling procedure or function.
+
+Note, this must be called immediately following a call to call_depth.get_depth.
+
+```text
+declare
+  who_called_me varchar2(120);
+begin
+  who_called_me := call_depth.who_called_me;
+  dbms_output.put_line('who_called_me: ' || who_called_me);
+end;
+/
+
+who_called_me: NA
+```
+
+As this was the body of an anonymous block, there was not caller; hence the NA.
+
 ### demo-02.sql
 
 This is a demo of using the call_depth package:
