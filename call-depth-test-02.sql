@@ -31,6 +31,9 @@ is
 	i_call_depth integer;
 begin
 	i_call_depth := call_depth.get_depth;
+	dbms_output.put_line('p3 depth     :    ' || to_char(i_call_depth));
+	dbms_output.put_line('     who am i: ' || call_depth.who_am_i);
+	dbms_output.put_line('   who called: ' || call_depth.who_called_me);
 	-- depth will be 1 higher in stored proc than in anonymous block
 	if i_call_depth != 4 then
 		dbms_output.put_line(dbms_utility.format_call_stack);
@@ -43,6 +46,9 @@ is
 	i_call_depth integer;
 begin
 	i_call_depth := call_depth.get_depth;
+	dbms_output.put_line('p2 depth     :    ' || to_char(i_call_depth));
+	dbms_output.put_line('     who am i: ' || call_depth.who_am_i);
+	dbms_output.put_line('   who called: ' || call_depth.who_called_me);
 	-- cause failure for testing
 	--i_call_depth := 4;
 	if i_call_depth != 3 then
@@ -57,6 +63,9 @@ is
 	i_call_depth integer;
 begin
 	i_call_depth := call_depth.get_depth;
+	dbms_output.put_line('p1 depth     :    ' || to_char(i_call_depth));
+	dbms_output.put_line('     who am i: ' || call_depth.who_am_i);
+	dbms_output.put_line('   who called: ' || call_depth.who_called_me);
 	if i_call_depth != 2 then
 		dbms_output.put_line(dbms_utility.format_call_stack);
 		raise_application_error(-20001,'Incorrect call depth in p1. It should be 2, but was ' || to_char(i_call_depth) );
@@ -69,6 +78,9 @@ is
 	i_call_depth integer;
 begin
 	i_call_depth := call_depth.get_depth;
+	dbms_output.put_line('main depth   :    ' || to_char(i_call_depth));
+	dbms_output.put_line('     who am i: ' || call_depth.who_am_i);
+	dbms_output.put_line('   who called: ' || call_depth.who_called_me);
 	-- cause failure for testing
 	--i_call_depth := 2;
 	if i_call_depth != 1 then
