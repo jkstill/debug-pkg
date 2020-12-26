@@ -23,7 +23,13 @@ When you build the call_depth package, dbms_db_version.version is used to determ
 
 This has been tested on 11.1 and 19.8 versions of the oracle database.
 
-### call_depth.sql
+## plsql-init.sql
+
+This script is called prior to creating the package.
+Adjust the values in this script as necessary.
+
+
+### call-depth.sql
 
 Create the package:
 ```text
@@ -37,8 +43,9 @@ Package body created.
 
 No errors.
 ```
+### call_depth subprograms
 
-### call_depth.get_depth
+#### call_depth.get_depth
 
 Returns calling depth from the stack.
 
@@ -75,7 +82,7 @@ ORA-06512: at "JKSTILL.CALL_DEPTH", line 218
 
 ```
 
-### call_depth.who_am_i
+#### call_depth.who_am_i
 
 Returns the name of the current procedure or function.
 
@@ -92,7 +99,7 @@ SQL# /
 who_am_i: __anonymous_block
 ```
 
-### call_depth.who_called_me
+#### call_depth.who_called_me
 
 Returns the name of the calling procedure or function.
 
@@ -165,17 +172,14 @@ PL/SQL procedure successfully completed.
 
 The depth of the stack is different when called via anonymous block than when called strictly within stored code.
 
-This package does not attempt to deal with this.
+The value of depth of the current call is adjust to provide a consistent value, whether called from an anonymous block, or a stored procedure.
 
-Whether done via the manual procedure (11g and older) or utl_call_stack, 2 is subtracted from the value.
+See these test scripts:
 
-This more closely aligns with the application (PL/SQL) call stack.
-
-For instance , p0 calls p1, p1 calls p3.  The call stack returned from within p3() is 3 if the code is all an anonymous block.
-
-When created as a stored procedure, calling call_depth.get_depth returns 1 value higher.
-
-See `call-stack-test-01.sql` and `call-stack-test-02.sql`
+- call-stack-test-01.sql
+  - uses an anonymous block
+- call-stack-test-02.sql
+  - uses a test package
 
 ## Debug package DBG
 
@@ -191,6 +195,121 @@ No indexes are created on the table - create whatever indexes you need.
 The first invocation of dbg.logentry will create the log table if it doesn't already exist, along with a sequence PLSQL_LOG_SEQ.
 
 Following are some tests of the package.
+
+## plsql-init.sql
+
+This script is called prior to creating the package.
+Adjust the values in this script as necessary.
+
+## debug-pkg.sql
+
+This is the file used to create the package DBG.
+
+```text
+SQL# @debug-pkg.sql 
+this line appears only when the develop flag is true
+this line appears only when the debug flag is true
+
+PL/SQL procedure successfully completed.
+
+
+Package created.
+
+No errors.
+
+Package body created.
+
+No errors.
+
+```
+
+### DBG package subprograms
+
+#### procedure debug_enable
+
+Enable debugging output. It is disabled by default.
+
+#### procedure debug_disable
+
+Disable debugging output. It is disabled by default.
+
+#### procedure debug_print
+
+Print the text if debugging is enabled.
+
+```sql
+dbg.debug_print('This is a test of the debug package');
+```
+
+#### function debug_status 
+
+Returns a boolean indicating the current debug status.
+
+#### procedure p
+
+The same as dbms_output.print, but a bit easier to type.
+
+#### procedure pl
+
+The same as dbms_output.print_line, but a bit easier to type.
+
+#### function header_chr_get
+
+Get the character used to compose the header line used in dbg.debug_print;
+
+#### procedure header_chr_set
+
+Set the character used to compose the header line used in dbg.debug_print.
+
+This will have effect only if called prior to the first call to dbg.debug_print.
+
+#### function footer_chr_get
+
+Get the character used to compose the footer line used in dbg.debug_print;
+
+#### procedure footer_chr_set
+
+Set the character used to compose the footer line used in dbg.debug_print.
+
+This will have effect only if called prior to the first call to dbg.debug_print.
+
+#### function banner_len_get
+
+Get the length used for the header and footer lines.
+
+#### procedure banner_len_set
+
+Get the length used for the header and footer lines.
+
+This will have effect only if called prior to the first call to dbg.debug_print.
+
+#### function pad_get
+
+Get the character used for padding the debug output text.
+
+#### procedure pad_set
+
+Set the character used for padding the debug output text.
+
+#### function indent_get
+
+Get the value for the current indent size.
+
+#### procedure indent_set
+
+Set the value for the indent size.
+
+#### procedure log_init;
+
+Initialize the log table and sequence.
+
+This will be done automatically with the first logentry as well.
+
+#### procedure logentry
+
+Add an entry to the log table.
+
+See `dbg-pkg-test-02.sql` for an example usage.
 
 ## dbg-pkg-test-01.sql
 
