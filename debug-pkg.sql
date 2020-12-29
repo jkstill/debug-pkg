@@ -1,4 +1,10 @@
 
+-- debug-pkg.sql
+-- 2020-12-23 Jared Still  jkstill@gmail.com
+-- provide some simple debugging messages
+-- and logging to a table
+-- not a real debugger - just messages indented per call depth
+
 /*
 
  the names are short here 
