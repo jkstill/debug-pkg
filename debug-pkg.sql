@@ -279,7 +279,7 @@ end;
 --== You can create indexes as needed ==--
 procedure log_init
 is
-	v_current_action varchar2(30);
+	v_current_action varchar2(128);
 	i_error_code integer;
 begin
 	v_current_action := 'create sequence ' || v_log_seq;
