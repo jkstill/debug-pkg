@@ -30,6 +30,11 @@ is
 	procedure debug_print(text_in clob);
 	function debug_status return boolean;
 
+	function get_local_debug_status return boolean;
+   procedure debug_local_set( b_debug_status_in boolean);
+   procedure debug_local_reset;
+
+
 	procedure p (text_in clob);
 	procedure pl (text_in clob);
 
@@ -94,6 +99,7 @@ is
 	v_footer_chr varchar2(1) := '-';
 	v_banner_len integer := 60;
 	b_debug boolean := false;
+	b_debug_local boolean;
 
 	-- exceptions
 	e_object_exists exception;
@@ -138,6 +144,67 @@ is
 begin
 	-- subtract two from depth to account for calling this and the parent debug_print()
 	return rpad(pad_get,indent_get * call_depth.get_depth -2,pad_get);
+end;
+
+/*
+
+ debug_set and debug_reset are for localized debug enable
+
+ for example: you want to call a procedure that is not doing what expected,
+ but only show debugging output for that one - not globally enabled debug
+
+ procedure xyz (
+ 	name_in varchar2,
+	debug_in boolean default false
+ ) is
+ begin
+   debug_local_set(debug_in);
+   
+	some code...
+
+	dbg.debug_print('print something');
+
+	more code...
+
+	dbg.debug_print('print something');
+
+	debug_local_reset;
+ end;
+
+ Keep in mind the global debug stats will cascade to called functions and procedures
+
+*/
+
+function get_local_debug_status return boolean
+is
+begin
+	return b_debug_local;
+end;
+
+procedure debug_local_set( b_debug_status_in boolean)
+is
+begin
+	-- prevents resetting debug if it was set globally
+	if debug_status then
+		b_debug_local := false;
+	else
+		b_debug_local := b_debug_status_in;
+		if b_debug_status_in then
+			--dbg.pl('debug_local_set: setting Global Debug TRUE');
+			dbg.debug_enable;
+		end if;
+	end if;
+end;
+
+procedure debug_local_reset
+is
+begin
+	-- prevents resetting debug if it was set globally
+	if get_local_debug_status then
+		--dbg.pl('debug_local_reset: Local Debug FALSE');
+		--dbg.pl('debug_local_reset: setting Global Debug FALSE');
+		dbg.debug_disable;
+	end if;
 end;
 
 
