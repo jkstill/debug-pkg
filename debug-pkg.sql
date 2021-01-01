@@ -336,7 +336,13 @@ begin
 		|| ':log_msg'
 		|| ')';
 
-	execute immediate v_sql using i_id, systimestamp, client_info, module_info, action_info, tag_in, log_msg_in;
+	execute immediate v_sql using 
+		i_id, systimestamp, 
+		substr(client_info,1,64), 
+		substr(module_info,1,64), 
+		substr(action_info,1,64), 
+		substr(tag_in,1,64), 
+		log_msg_in;
 
 	commit;
 
