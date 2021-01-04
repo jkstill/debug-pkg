@@ -360,6 +360,7 @@ procedure log_init
 is
 	v_current_action varchar2(128);
 	i_error_code integer;
+	pragma autonomous_transaction;
 begin
 	v_current_action := 'create sequence ' || v_log_seq;
 	v_sql := v_current_action;
