@@ -21,7 +21,7 @@
 @@plsql-init
 
 create or replace package dbg
-authid definer
+authid current_user
 is
 
 	-- debug output control

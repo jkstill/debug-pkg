@@ -13,7 +13,7 @@ set linesize 250 trimspool on
 set pagesize 100
 
 create or replace package call_depth
-authid definer
+authid current_user
 is
 	
 	function get_depth return integer;
