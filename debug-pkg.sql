@@ -354,6 +354,32 @@ when others then
 	raise ;
 end;
 
+--== Check if the table exists ==--
+--== This could easily be changed to object_exists ==--
+function table_exists return boolean
+is
+	cursor csr_tab_exist (table_name_in varchar2)
+	is
+	select count(*) tabcount
+	from user_tables
+	where table_name = table_name_in;
+
+	i_tab_count integer;
+
+begin
+	open csr_tab_exist(v_log_table); -- specified in package body global
+	fetch csr_tab_exist into i_tab_count;
+	close csr_tab_exist;
+
+	if i_tab_count > 0 then 
+		return true;
+	else
+		return false;
+	end if;
+	
+end;
+
+
 --== Initialize the log table and sequnce ==--
 --== You can create indexes as needed ==--
 procedure log_init
@@ -397,31 +423,6 @@ when others then
 	pl('Error encountered in log_init with "' || v_current_action || '"');
 	pl('Error: ' || to_char(i_error_code));
 	raise;
-end;
-
---== Check if the table exists ==--
---== This could easily be changed to object_exists ==--
-function table_exists return boolean
-is
-	cursor csr_tab_exist (table_name_in varchar2)
-	is
-	select count(*) tabcount
-	from user_tables
-	where table_name = table_name_in;
-
-	i_tab_count integer;
-
-begin
-	open csr_tab_exist(v_log_table); -- specified in package body global
-	fetch csr_tab_exist into i_tab_count;
-	close csr_tab_exist;
-
-	if i_tab_count > 0 then 
-		return true;
-	else
-		return false;
-	end if;
-	
 end;
 
 begin

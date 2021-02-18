@@ -21,14 +21,20 @@ begin
 
 	$if $$develop $then
 		dbms_output.put_line('this line appears only when the develop flag is true');
+	$else
+		null;
 	$end
 
 	$if $$debug $then
 		dbms_output.put_line('this line appears only when the debug flag is true');
+	$else
+		null;
 	$end
 
 	$if $$mode11g $then
 		dbms_output.put_line('this line appears only when the mode11g flag is true');
+	$else
+		null;
 	$end
 
 end;
