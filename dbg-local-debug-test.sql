@@ -1,6 +1,8 @@
 
 -- test local debug
 
+set serveroutput on size unlimited
+
 declare
 
 	procedure p1 ( debug_in boolean := false )
