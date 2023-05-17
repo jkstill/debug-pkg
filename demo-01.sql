@@ -1,7 +1,7 @@
 
 -- demo-01.sql
 -- use dbms_utility.format_call_stack to get a depth
--- for 12c+ use utl_stack package
+-- for 12c+ use utl_call_stack package
 -- this is handled via :
 --   $if dbms_db_version.version <= 11 $then
 

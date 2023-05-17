@@ -28,6 +28,109 @@ This has been tested on 11.1 and 19.8 versions of the oracle database.
 This script is called prior to creating the package.
 Adjust the values in this script as necessary.
 
+## create.sql
+
+Shortcut to create the `call_depth` and `dbg` packages.
+
+## demo-01.sql
+
+A short demo of getting stack depth in oracle, before and after 11g.
+
+All coded in a PL/SQL anonymous block
+
+```text
+SQL# @demo-01
+root stack depth: 0
+### P1 ###
+----- PL/SQL Call Stack -----
+  object      line  object
+  handle    number  name
+0xb8920dc8       129  anonymous block
+0xb8920dc8       147  anonymous block
+
+current stack depth: 1
+  ### P2 ###
+----- PL/SQL Call Stack -----
+  object      line  object
+  handle    number  name
+0xb8920dc8       112  anonymous block
+0xb8920dc8       136  anonymous block
+0xb8920dc8       147  anonymous block
+
+current stack depth: 2
+      ### P3 ###
+----- PL/SQL Call Stack -----
+  object      line  object
+  handle    number  name
+0xb8920dc8        95  anonymous block
+0xb8920dc8       119  anonymous block
+0xb8920dc8       136  anonymous block
+0xb8920dc8       147  anonymous block
+
+current stack depth: 3
+
+PL/SQL procedure successfully completed.
+```
+
+## demo-02.sql
+
+Similar to demo-01.sql, but calls the `call_depth` package.
+
+```text
+SQL# @demo-02
+root stack depth: 1
+### P1 ###
+----- PL/SQL Call Stack -----
+  object      line  object
+  handle    number  name
+0x71f23990        24  anonymous block
+0x71f23990        32  anonymous block
+
+current stack depth: 2
+  ### P2 ###
+----- PL/SQL Call Stack -----
+  object      line  object
+  handle    number  name
+0x71f23990        15  anonymous block
+0x71f23990        26  anonymous block
+0x71f23990        32  anonymous block
+
+current stack depth: 3
+      ### P3 ###
+----- PL/SQL Call Stack -----
+  object      line  object
+  handle    number  name
+0x71f23990         7  anonymous block
+0x71f23990        17  anonymous block
+0x71f23990        26  anonymous block
+0x71f23990        32  anonymous block
+
+current stack depth: 4
+
+PL/SQL procedure successfully completed.
+```
+
+## call-depth-test-01.sql
+
+A more comprehensive demo of `call_depth`
+
+```text
+SQL# @call-depth-test-01.sql
+main depth   :    1
+     who am i: __anonymous_block
+   who called: NA
+p1 depth     :    2
+     who am i: __anonymous_block.P1
+   who called: __anonymous_block
+p2 depth     :    3
+     who am i: __anonymous_block.P2
+   who called: __anonymous_block.P1
+p3 depth     :    4
+     who am i: __anonymous_block.P3
+   who called: __anonymous_block.P2
+
+PL/SQL procedure successfully completed.
+```
 
 ### call-depth.sql
 

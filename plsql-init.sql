@@ -10,7 +10,7 @@ alter session set plsql_warnings = 'ENABLE:SEVERE';
 --alter session set plsql_warnings = 'ENABLE:ALL';
 
 -- may not currently be using debug
-alter session set plsql_ccflags = 'debug:true, develop:true, mode11g:false';
+alter session set plsql_ccflags = 'debug:false, develop:true, mode11g:false';
 
 -- INTERPRETED (default) or NATIVE
 alter session set PLSQL_CODE_TYPE =  INTERPRETED ;
